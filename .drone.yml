@@ -1,0 +1,17 @@
+image: dasa/android
+env:
+  - ANDROID_HOME=/usr/local/android-sdk-linux
+script:
+  - ./gradlew assembleDebug
+  - ./gradlew lintDebug
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - bash /usr/local/bin/android-wait-for-emulator
+  - ./gradlew connectedCheck
+notify:
+  slack:
+    team: {{slackTeam}}
+    channel: {{slackChannel}}
+    username: drone
+    token: {{slackToken}}
+    on_success: true
+    on_failure: true 
