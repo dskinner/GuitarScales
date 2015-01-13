@@ -1,17 +1,15 @@
 image: dasa/android
-env:
-  - ANDROID_HOME=/usr/local/android-sdk-linux
 script:
-  - ./gradlew assembleDebug
-  - ./gradlew lintDebug
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - bash /usr/local/bin/android-wait-for-emulator
-  - ./gradlew connectedCheck
+  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-audio -no-window -force-32bit &
+  - android-wait-for-emulator
+  - ./gradlew connectedCheck --stacktrace --info
+cache:
+  - /root/.android
+  - /root/.gradle
 notify:
   slack:
-    team: {{slackTeam}}
-    channel: {{slackChannel}}
-    username: drone
-    token: {{slackToken}}
+    webhook_url: $$slack_url
+    on_started: true
     on_success: true
     on_failure: true 
